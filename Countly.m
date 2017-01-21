@@ -487,11 +487,11 @@
         return;
     }
 
-    [self UUIDInServerUrlStr:url resultBlock:^(NSString* UDID) {
+    [Countly UUIDInServerUrlStr:url resultBlock:^(NSString* UDID) {
         [[Countly sharedInstance]setNewDeviceID:UDID onServer:YES];
         [[Countly sharedInstance] startWithConfig:config];
     }];
-    
+
 
 }
 

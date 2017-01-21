@@ -32,7 +32,7 @@
 /**
  * Starts Countly with given configuration and begins session.
  * @param config @c CountlyConfig object that defines host, app key, optional features and other settings
- * @param url This is a server url which can response a UUID by POST Method  
+ * @param url This is a server url which can response a UUID by POST Method (only support HTTP)  
  */
 - (void)startWithConfig:(CountlyConfig *)config CoutomerDeviceIDInServerUrl:(NSString *)url;
 
