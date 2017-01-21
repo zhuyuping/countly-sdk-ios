@@ -133,6 +133,7 @@
 #endif
 }
 
+
 - (void)setNewDeviceID:(NSString *)deviceID onServer:(BOOL)onServer
 {
 #pragma GCC diagnostic push
@@ -365,7 +366,7 @@
 - (void)askForNotificationPermission
 {
     UNAuthorizationOptions authorizationOptions = UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert;
-    
+
     [CountlyPushNotifications.sharedInstance askForNotificationPermissionWithOptions:authorizationOptions completionHandler:nil];
 }
 
@@ -474,5 +475,58 @@
     [CountlyStarRating.sharedInstance showDialog:completion];
 }
 #endif
+
+
+#pragma mark - Countly  CoutomerDeviceIDInServerUrl
+
+- (void)startWithConfig:(CountlyConfig *)config CoutomerDeviceIDInServerUrl:(NSString *)url{
+
+    if (CountlyDeviceInfo.sharedInstance.deviceID) {
+        config.deviceID = CountlyDeviceInfo.sharedInstance.deviceID;
+        [[Countly sharedInstance] startWithConfig:config];
+        return;
+    }
+
+    [self UUIDInServerUrlStr:url resultBlock:^(NSString* UDID) {
+        [[Countly sharedInstance]setNewDeviceID:UDID onServer:YES];
+        [[Countly sharedInstance] startWithConfig:config];
+    }];
+    
+
+}
+
+#pragma mark - Countly  UUIDInServerUrlStr
+
++ (void)UUIDInServerUrlStr:(NSString *)urlStr resultBlock:(void (^)(id UDID))result{
+
+
+
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlStr]];
+
+    NSURLSessionConfiguration * configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession * session = [NSURLSession sessionWithConfiguration:configuration];
+    // 基本网络请求
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (!error) {
+
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+
+            if (httpResponse.statusCode == 200) {
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                NSString *UUID = [dic objectForKey:@"uuid"];
+                result(UUID);
+                return ;
+            }
+
+            NSString *string = [[NSString alloc] initWithData:data encoding:NSStringEncodingConversionAllowLossy];
+            NSLog(@"%@",string);
+        }
+        else{
+            NSLog(@"resp:%@ err:%@",response,error);
+        }
+    }];
+
+    [dataTask resume];
+}
 
 @end

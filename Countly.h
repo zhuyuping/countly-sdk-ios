@@ -30,6 +30,13 @@
 - (void)startWithConfig:(CountlyConfig *)config;
 
 /**
+ * Starts Countly with given configuration and begins session.
+ * @param config @c CountlyConfig object that defines host, app key, optional features and other settings
+ * @param url This is a server url which can response a UUID by POST Method  
+ */
+- (void)startWithConfig:(CountlyConfig *)config CoutomerDeviceIDInServerUrl:(NSString *)url;
+
+/**
  * Sets new device ID to be persistently stored and used in following requests.
  * @param deviceID New device ID
  * @param onServer If set, data on server will be merged automatically, otherwise device will be counted as a new device
@@ -129,7 +136,7 @@
 - (void)recordEvent:(NSString *)key segmentation:(NSDictionary *)segmentation count:(NSUInteger)count sum:(double)sum duration:(NSTimeInterval)duration;
 
 /**
- * Starts a timed event with given key to be ended later. Duration of timed event will be calculated on ending. 
+ * Starts a timed event with given key to be ended later. Duration of timed event will be calculated on ending.
  * @discussion Trying to start an event with already started key will have no effect.
  * @param key Event key
  */
@@ -143,7 +150,7 @@
 - (void)endEvent:(NSString *)key;
 
 /**
- * Ends a previously started timed event with given key, segmentation, count and sum. 
+ * Ends a previously started timed event with given key, segmentation, count and sum.
  * @discussion Trying to end an event with already ended (or not yet started) key will have no effect.
  * @param key Event key
  * @param segmentation Segmentation key-value pairs of event
@@ -217,7 +224,7 @@
 #pragma mark - Countly AutoViewTracking
 
 /**
- * Reports a visited view with given name manually. 
+ * Reports a visited view with given name manually.
  * @discussion If auto ViewTracking feature is activated on start configuration, this method does not need to be called manually.
  * @param viewName Name of the view visited
  */
